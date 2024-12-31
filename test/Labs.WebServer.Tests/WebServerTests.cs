@@ -13,7 +13,7 @@ public class WebServerFixture : IDisposable
     {
         _server = new Labs.WebServer.WebServer();
         _serverTask = _server.StartAsync();
-        
+
         // Give the server a moment to start
         Thread.Sleep(1000);
     }

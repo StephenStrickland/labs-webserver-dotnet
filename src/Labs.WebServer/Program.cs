@@ -7,24 +7,14 @@ using System.Threading.Tasks;
 
 namespace Labs.WebServer;
 
-public static class Logger
+
+public class Program
 {
-    private enum LogLevel
+    public static async Task Main()
     {
-        INFO,
-        WARN,
-        ERROR
+        using var server = new WebServer();
+        await server.StartAsync();
     }
-
-    private static void Log(LogLevel level, string message)
-    {
-        var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        Console.WriteLine($"[{timestamp}] [{level}] {message}");
-    }
-
-    public static void Info(string message) => Log(LogLevel.INFO, message);
-    public static void Warn(string message) => Log(LogLevel.WARN, message);
-    public static void Error(string message) => Log(LogLevel.ERROR, message);
 }
 
 public class WebServer : IDisposable
@@ -120,7 +110,7 @@ public class WebServer : IDisposable
             }
 
             var path = request.Url?.AbsolutePath ?? "/";
-            
+
             switch (path)
             {
                 case "/":
@@ -232,11 +222,23 @@ public class WebServer : IDisposable
     }
 }
 
-public class Program
+
+public static class Logger
 {
-    public static async Task Main()
+    private enum LogLevel
     {
-        using var server = new WebServer();
-        await server.StartAsync();
+        INFO,
+        WARN,
+        ERROR
     }
+
+    private static void Log(LogLevel level, string message)
+    {
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        Console.WriteLine($"[{timestamp}] [{level}] {message}");
+    }
+
+    public static void Info(string message) => Log(LogLevel.INFO, message);
+    public static void Warn(string message) => Log(LogLevel.WARN, message);
+    public static void Error(string message) => Log(LogLevel.ERROR, message);
 }
