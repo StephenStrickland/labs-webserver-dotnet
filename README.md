@@ -1,17 +1,44 @@
 # labs-webserver-dotnet
 
-A simple web server implementation in .NET using only the standard library. This project explores building a basic HTTP server from scratch without any external dependencies or web frameworks.
+A simple web server implementation in .NET using only the standard library. This project explores building HTTP servers from scratch without any external dependencies or web frameworks. It includes two different implementations:
+
+1. **HttpListener-based Server** (`Labs.WebServer`)
+   - Uses the built-in `HttpListener` class
+   - High-level abstraction over HTTP protocol
+   - Easy-to-use API for handling HTTP requests
+
+2. **TCP-based Server** (`Labs.TCPWebServer`)
+   - Built directly on top of TCP sockets
+   - Manual HTTP protocol implementation
+   - Lower-level control over networking details
+   - Educational implementation showing HTTP internals
+
+### Available Routes
+
+Both servers implement the same routes:
+
+1. **Root Route** (`GET /`)
+   - Returns a simple welcome message
+   - Example response: "Hello from .NET server!" (HttpListener) or "Hello from TCP .NET server!" (TCP)
+
+2. **Static Files** (`GET /static/{filename}`)
+   - Serves files from the static directory
+   - Automatically detects content type based on file extension
+   - Supports common file types (txt, html, css, js, json, jpg, png, gif, svg)
+   - Prevents directory traversal attacks
+   - Returns appropriate HTTP status codes (200, 404, 400)
 
 ## Goals
-- Build a lightweight web server using .NET's built-in networking capabilities
+- Build lightweight web servers using different .NET networking approaches
 - Handle basic HTTP requests and responses
 - Understand the fundamentals of web server architecture
-- Explore low-level networking concepts in .NET
+- Explore both high-level and low-level networking concepts in .NET
+- Compare different implementation approaches
 
 ## Getting Started
 
 ### Prerequisites
-- .NET 8.0 SDK or later
+- .NET 9.0 SDK or later
 - Git
 
 ### Building Locally
@@ -40,7 +67,7 @@ Execute the test suite using:
 ./build.sh test
 ```
 
-The test results will be displayed in the console, showing the status of each test case.
+The test results will be displayed in the console, showing the status of each test case for both server implementations.
 
 ## Benchmarks
 
