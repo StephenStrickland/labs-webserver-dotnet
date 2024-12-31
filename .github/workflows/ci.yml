@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Install NUKE Global Tool
+      run: dotnet tool install --global Nuke.GlobalTool
+        
+    - name: Build and Test
+      run: nuke --target Compile+Test
+      
+    - name: Run Benchmarks
+      run: nuke --target Benchmark 
