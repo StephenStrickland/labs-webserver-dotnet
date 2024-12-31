@@ -41,3 +41,30 @@ Execute the test suite using:
 ```
 
 The test results will be displayed in the console, showing the status of each test case.
+
+## Benchmarks
+
+The project includes performance benchmarks using BenchmarkDotNet. The benchmarks test:
+
+- Root endpoint performance
+- Static file serving (small and large files)
+- 404 response handling
+
+To run the benchmarks locally:
+
+```bash
+# On Windows
+./build.cmd benchmark --configuration Release
+
+# On macOS/Linux
+./build.sh benchmark --configuration Release
+```
+
+> **Note**: Always run benchmarks with `--configuration Release` for accurate performance measurements. Debug builds include additional overhead that can significantly impact benchmark results.
+
+Benchmarks are also run automatically:
+- On every push to main
+- On pull requests
+- Can be triggered manually from the Actions tab
+
+Results are stored as artifacts in GitHub Actions for 90 days.

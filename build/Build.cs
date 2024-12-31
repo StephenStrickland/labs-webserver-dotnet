@@ -60,6 +60,18 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetTest(x => x
+                .SetProjectFile(TestDirectory / "Labs.WebServer.Tests" / "Labs.WebServer.Tests.csproj")
+                .SetConfiguration(Configuration.ToString())
+                .EnableNoRestore()
+                .EnableNoBuild());
+        });
+
+    Target Benchmark => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            DotNetRun(x => x
+                .SetProjectFile(RootDirectory / "benchmarks" / "Labs.WebServer.Benchmarks" / "Labs.WebServer.Benchmarks.csproj")
                 .SetConfiguration(Configuration.ToString())
                 .EnableNoRestore()
                 .EnableNoBuild());

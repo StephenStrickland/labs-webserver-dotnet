@@ -7,4 +7,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+    <PackageReference Include="xunit" Version="2.6.6" />
+    <ProjectReference Include="../../src/Labs.WebServer/Labs.WebServer.csproj" />
+  </ItemGroup>
+
 </Project>
