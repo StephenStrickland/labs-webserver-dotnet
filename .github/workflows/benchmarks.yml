@@ -22,6 +22,8 @@ jobs:
         
     - name: Run Benchmarks
       run: ./build.sh benchmark
+      env:
+        LABS_LOGGING_ENABLED: false
       
     - name: Store Benchmark Results
       uses: actions/upload-artifact@v4

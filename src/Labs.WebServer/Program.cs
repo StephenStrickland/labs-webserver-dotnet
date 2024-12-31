@@ -232,8 +232,18 @@ public static class Logger
         ERROR
     }
 
+    private static readonly Lazy<bool> _isEnabled = new(() => 
+    {
+        var envVar = Environment.GetEnvironmentVariable("LABS_LOGGING_ENABLED");
+        return string.IsNullOrEmpty(envVar) || !envVar.Equals("false", StringComparison.OrdinalIgnoreCase);
+    });
+
+    public static bool IsEnabled => _isEnabled.Value;
+
     private static void Log(LogLevel level, string message)
     {
+        if (!IsEnabled) return;
+        
         var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         Console.WriteLine($"[{timestamp}] [{level}] {message}");
     }
