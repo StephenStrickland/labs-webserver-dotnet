@@ -2,44 +2,67 @@
 using System.Net;
 using System.Text;
 
+public static class Logger
+{
+    private enum LogLevel
+    {
+        INFO,
+        WARN,
+        ERROR
+    }
+
+    private static void Log(LogLevel level, string message)
+    {
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        Console.WriteLine($"[{timestamp}] [{level}] {message}");
+    }
+
+    public static void Info(string message) => Log(LogLevel.INFO, message);
+    public static void Warn(string message) => Log(LogLevel.WARN, message);
+    public static void Error(string message) => Log(LogLevel.ERROR, message);
+}
+
 class Program
 {
+    private const string ListenerUrl = "http://localhost:8080/";
+
     static void Main()
     {
         var listener = new HttpListener();
+        var isRunning = true;
 
         try
         {
             // Add prefix
-            listener.Prefixes.Add("http://localhost:8080/");
+            listener.Prefixes.Add(ListenerUrl);
         }
         catch (HttpListenerException ex)
         {
-            Console.WriteLine($"[ERROR] Failed to add prefix: {ex.Message}");
+            Logger.Error($"Failed to add prefix: {ex.Message}");
             return;
         }
 
         try
         {
             listener.Start();
-            Console.WriteLine("[INFO] Server started. Listening at http://localhost:8080/");
+            Logger.Info($"Server started. Listening at {ListenerUrl}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Listener failed to start: {ex.Message}");
+            Logger.Error($"Listener failed to start: {ex.Message}");
             return;
         }
 
         // Gracefully stop on Ctrl+C
         Console.CancelKeyPress += (sender, e) =>
         {
-            Console.WriteLine("[INFO] Shutdown signal received.");
+            e.Cancel = true; // Prevent immediate termination
+            Logger.Info("Shutdown signal received.");
+            isRunning = false;
             listener.Stop();
-            listener.Close();
-            Environment.Exit(0);
         };
 
-        while (true)
+        while (isRunning)
         {
             HttpListenerContext context;
             try
@@ -48,21 +71,25 @@ class Program
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Failed to get context: {ex.Message}");
+                if (!isRunning)
+                {
+                    break;
+                }
+                Logger.Error($"Failed to get context: {ex.Message}");
                 continue;
             }
 
             try
             {
                 var request = context.Request;
-                Console.WriteLine($"[INFO] Received request: {request.HttpMethod} {request.Url}");
+                Logger.Info($"Received request: {request.HttpMethod} {request.Url}");
 
                 // Only handle GET for this simple server
                 if (!request.HttpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
                     context.Response.Close();
-                    Console.WriteLine("[WARN] Method not allowed.");
+                    Logger.Warn("Method not allowed.");
                     continue;
                 }
 
@@ -76,11 +103,11 @@ class Program
                 using (var output = response.OutputStream)
                     output.Write(buffer, 0, buffer.Length);
 
-                Console.WriteLine("[INFO] Responded with 200 OK.");
+                Logger.Info("Responded with 200 OK.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Failed to handle request: {ex.Message}");
+                Logger.Error($"Failed to handle request: {ex.Message}");
                 // Attempt to write a 500 error response if possible
                 try
                 {
@@ -90,5 +117,8 @@ class Program
                 catch { /* ignore */ }
             }
         }
+
+        listener.Close();
+        Logger.Info("Server shutdown complete.");
     }
 }
